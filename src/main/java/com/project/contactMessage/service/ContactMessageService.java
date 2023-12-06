@@ -6,6 +6,7 @@ import com.project.contactMessage.entity.ContactMessage;
 import com.project.contactMessage.mapper.ContactMessageMapper;
 import com.project.contactMessage.messages.Messages;
 import com.project.contactMessage.repository.ContactMessageRepository;
+import com.project.exception.ConflictException;
 import com.project.exception.ResourceNotFoundException;
 import com.project.payload.response.ResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Objects;
 
 @Service//21
@@ -87,9 +91,60 @@ public class ContactMessageService {
              // bu pakeg altina bir class olusturduk Messages No;134
      ); //132
     }//131
+
+    public List<ContactMessage> searchByDateBetween(String beginDateString, String endDateString) {
+        try {
+            LocalDate beginDate = LocalDate.parse(beginDateString); //155
+            LocalDate endDate = LocalDate.parse(endDateString); //156
+            return contactMessageRepository.findMessagesBetweenDates(beginDate,endDate);//157-158
+        } catch (DateTimeParseException e) {
+            throw new ConflictException(Messages.WRONG_DATE_FORMAT); //164- 165 Messages class gidiyoruz adaptasyonu
+        }//158
+    } //154 ContactMessageController den geldik String ifadeleri localDate ifadelere cevirecegiz
+
+    public List<ContactMessage> searchBetweenTimes(String startHour, String startMinute, String endHour, String endMinute) {
+        try {
+            int startH = Integer.parseInt(startHour);
+            int startM = Integer.parseInt(startMinute);
+            int endH = Integer.parseInt(endHour);
+            int endM = Integer.parseInt(endMinute);
+            return contactMessageRepository.findMessagesBetweenTimes(startH, startM, endH, endM);//172-173-174-175- 176
+        } catch (NumberFormatException e) {
+            throw new ConflictException(Messages.WRONG_TIME_FORMAT); //179 Message class-180
+        }//178
+    }//171-ContactMessageController den greate modotu ile geldim
 }  //20
 //124 greate metohd findBySubjectEquals to ContactMessageRepository
 //128 to ContactMessageController
 //132 bu asamada exection clasi olusturuyoruz exception klasini projectte olusturuyoruz uygulmanin genelinde kullanmak icin,
 //132 project pakeg altina exception pakeg aciyoruz
 //134 to 135 message pakeg altindaki Message clasidir
+// 158 findMessagesBetweenDates to ContactMessageRepository class gidiyoruz
+//158 GTA evception önlemek icin ContactMessageRepository classtan  buraya geldim geri dönüs yaptim asagidaki kotlari kopy yapip aldim
+/* LocalDate beginDate = LocalDate.parse(beginDateString); //155
+        LocalDate endDate = LocalDate.parse(endDateString); //156
+        return contactMessageRepository.findMessagesBetweenDates(beginDate,endDate);//157-158*/
+//158-159 Yukarida Code gelip 1-SurroundWith üzerine gelinir buradan 2- try/catch secilir
+/* } catch (Exception e) {
+            throw new RuntimeException(e);
+        }//158 bu sekilde aldik ancak firlayacak olan exception  "DateTimeParseException" dur bunu elle sectik*/
+//159-160 excepsin icin projedeki anapkegdaki exception pakeg gidiyoruz ve oraya bir ConflictException classi olusturuyoruz
+// 163 } catch (DateTimeParseException e) {
+//            throw new RuntimeException(e);
+//        }//158  RuntimeException yerine ConflictException (e) icin mesaj bölümüne ayrica not atacagiz
+//164- 165 Messages class gidiyoruz adaptasyonu
+//166 (164-165) yazdiklarimiz icin ContactMessageRepository katmanina gidiyoruz
+//171-ContactMessageController den greate modotu ile geldim Stringleri numerik dataya cevirme yapacagim
+//176 kendimiz ürettigimiz method
+//177 greate method ile ContactMessageRepository class gidiyoruz
+/*178 exception firlattigi icin bunlari secip hendil yaptim int startH = Integer.parseInt(startHour);
+        int startM = Integer.parseInt(startMinute);
+        int endH = Integer.parseInt(endHour);
+        int endM = Integer.parseInt(endMinute);
+        return contactMessageRepository.findMessagesBetweenTimes(startH, startM, endH, endM);//172-173-174-175- 176
+        1-code (Surround With) 2- (try/catch)
+        catch (NumberFormatException e) {
+            throw new RuntimeException(e); ancak genel bir exception firlattigi icin bunu Conflict exception cevirecegiz
+            mesaji kendimiz sett etmek istiyoruz buraya uygun mesaj yazacagiz Message class gidiyoruz*/
+//179 Messages class gidiyoruz
+//181 180numarali kodun ContactMessageRepository classda Query codunu yazacagiz

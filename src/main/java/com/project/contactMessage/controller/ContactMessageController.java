@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController//24
 
@@ -57,11 +58,44 @@ public class ContactMessageController {
             @RequestParam(value = "type", defaultValue = "desc")String type
     ){
             return contactMessageService.searchBySubject(subject, page, size, sort, type);//119
-    }//117
-@DeleteMapping("/deleteById/{contactMessageId}") //128  http://localhost:8080/contactMessage/deleteById/1 + DELETE
+    }//117 Pet verable sistemi
+@DeleteMapping("/deleteById/{contactMessageId}") //128  http://localhost:8080/contactMessages/deleteById/1 + DELETE
     public ResponseEntity<String> deleteByIdPath(@PathVariable Long contactMessageId){
         return ResponseEntity.ok(contactMessageService.deleteById(contactMessageId));//130
 }//129
+    //140 requeest param ile yapmak
+    @DeleteMapping("/deleteByIdParam") // 141 http://localhost:8080/contactMessages/deleteByIdParam?contactMessageId=1 + DELETE
+    public ResponseEntity<String> deleteByIdParam(@RequestParam(value = "contactMessageId") Long contactMessageId ){
+        return ResponseEntity.ok(contactMessageService.deleteById(contactMessageId));//143
+    }//142
+    @GetMapping("/getByIdParam") //144 http://localhost:8080/contactMessages/getByIdParam?contactMessageId=1 + GET
+    public ResponseEntity<ContactMessage> getByIdWithParam(@RequestParam(value = "contactMessageId")Long contactMessageId){
+        return ResponseEntity.ok(contactMessageService.getContactMessageById(contactMessageId));//146
+    }//145
+    @GetMapping("/getById/{contactMessageId}") //147 petveriablr http://localhost:8080/contactMessages/getById/1 + GET
+    public ResponseEntity<ContactMessage> getByIdWithPath(@PathVariable Long contactMessageId){
+        return ResponseEntity.ok(contactMessageService.getContactMessageById(contactMessageId));//149
+    }//148
+    @GetMapping("/searchBetwennDates") //150 petveriablr http://localhost:8080/contactMessages/searchBetwennDates?beginDate=2023-12-05&endDate=2023-12-06 + GET
+    public ResponseEntity<List<ContactMessage>> searchBetwennDates(
+            @RequestParam(value = "beginDate") String beginDateString,
+            @RequestParam(value = "endDate") String endDateString
+    ){
+       List<ContactMessage> contactMessages= contactMessageService.searchByDateBetween(beginDateString, endDateString); //152
+        return ResponseEntity.ok(contactMessages); //153
+    }// 151
+@GetMapping("searchBetweenTimes/")//167 http://localhost:8080/contactMessages/searchBetwennTimes?startHour=09&startMinute=00&endHour=17&endMinute=30 + GET
+    public ResponseEntity<List<ContactMessage>> searchBetweenTimes(
+            @RequestParam(value = "startHour") String startHour,
+            @RequestParam(value = "startMinute") String startMinute,
+           @RequestParam(value = "endHour") String endHour,
+            @RequestParam(value = "endMinute")String endMinute){
+      List<ContactMessage> contactMessages = contactMessageService.searchBetweenTimes(startHour,startMinute,endHour,endMinute);//169
+    return ResponseEntity.ok(contactMessages);//170
+}//168
 } //23
 //120 greate metod searchBySubject to ContactMessageService
 //130 greate metotd deleteById to ContactMessageService
+// 154 searchByDateBetween great ile servis katina gidis
+//167 icin ConMesRepo dan geldik
+//169-171 gerat mothod ContactMessageService git
