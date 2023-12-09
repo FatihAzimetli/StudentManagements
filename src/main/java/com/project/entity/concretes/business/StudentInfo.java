@@ -53,7 +53,13 @@ public class StudentInfo {
     @JsonIgnore //382
     private User student; //380
 
-    //TODO : Lesson ve EducationTerm eklenecek
+
+    @ManyToOne //470
+    private Lesson lesson; //469
+
+
+    @OneToOne//472
+    private EducationTerm educationTerm; //471
 
 }//359 Student class'dan geldik
 
@@ -68,3 +74,7 @@ public class StudentInfo {
 *User tarafindan bakilinca OgretmenÖgrenci icin : OneToMany */
 
 /*383 User class dönüyoruz iliskiyi karsilastirmak icin*/
+
+//TODO : Lesson ve EducationTerm eklenecek 469
+
+/*473 icin Lesson class gittik*/
