@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.entity.concretes.business.LessonProgram;
 import com.project.entity.concretes.business.Meet;
 import com.project.entity.concretes.business.StudentInfo;
+import com.project.entity.enums.Gender;
 import lombok.*;
 
 import javax.persistence.*;
@@ -89,7 +90,8 @@ public class User {
 
 
     @Enumerated(EnumType.STRING) //336
-    private String gender; // 334 ögrencinin cinsiyet bilgisi bu bir enum class from 335 enums class gidiyorum
+    @Column(length = 10) //ChatGpt
+    private Gender gender; // 334 ögrencinin cinsiyet bilgisi bu bir enum class from 335 enums class gidiyorum
 
 
 

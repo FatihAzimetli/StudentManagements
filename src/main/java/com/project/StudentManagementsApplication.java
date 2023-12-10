@@ -11,3 +11,14 @@ public class StudentManagementsApplication {
 	}
 
 }
+
+/*Tablolar db olusturuldu simdi pom,eml gidip iki adet kütüphane ekliyecegiz
+*<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency> */

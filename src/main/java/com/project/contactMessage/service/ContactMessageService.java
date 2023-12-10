@@ -36,9 +36,7 @@ public class ContactMessageService {
         //DTO-->PJO dönüsümü yapacagiz baglanti icin mapper pakej olusturduk amacimiz mapleme islemleri icin
         ContactMessage contactMessage = contactMessageMapper.requestToContactMessage(contactMessageRequest);//83-84 degiskeni atamak
 
-        // kullanacagiz DTO-Pjo yada tam tersi pjo-->dto dönüsmleri icin bu pakeg kullanacagiz mapper
-        // icinde class olusturuyoruz class adi ContactMessageMapper
-        //84 repoya gönderdik
+
         ContactMessage saveData = contactMessageRepository.save(contactMessage);//85//86 karsilama bunu responsa ceviriyorum
         //ContactClassMapper 87
         return ResponseMessage.<ContactMessageResponse>builder() //96
@@ -148,3 +146,7 @@ public class ContactMessageService {
             mesaji kendimiz sett etmek istiyoruz buraya uygun mesaj yazacagiz Message class gidiyoruz*/
 //179 Messages class gidiyoruz
 //181 180numarali kodun ContactMessageRepository classda Query codunu yazacagiz
+
+/*// kullanacagiz DTO-Pjo yada tam tersi pjo-->dto dönüsmleri icin bu pakeg kullanacagiz mapper
+        // icinde class olusturuyoruz class adi ContactMessageMapper
+        //84 repoya gönderdik*/

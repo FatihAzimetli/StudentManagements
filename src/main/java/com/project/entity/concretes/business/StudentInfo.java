@@ -34,7 +34,7 @@ public class StudentInfo {
     private Double finalExam; //370 sinav bunlara notnull yazamayiz
 
 
-    private Double excamAverage; //371 iki sinav ortalamasi
+    private Double examAverage; //371 iki sinav ortalamasi
 
 
     private String infoNote; //372
@@ -44,12 +44,12 @@ public class StudentInfo {
     private Note letterGrade; //373 ögrencinin aa-bb gibi notu olacagindan burada enumclass olusturacagiz
 
 
-    @ManyToMany // 378 bir ögretmenin birden fazla studentInfosu olabilir User class danda iliskilendirmek gerekiyor
+    @ManyToOne // 378 bir ögretmenin birden fazla studentInfosu olabilir User class danda iliskilendirmek gerekiyor
     @JsonIgnore // 379 infunuploop girmemek icin bu metoduda yazacagiz
     private User teacher; //377
 
 
-    @ManyToMany //381
+    @ManyToOne //381
     @JsonIgnore //382
     private User student; //380
 
