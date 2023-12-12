@@ -41,7 +41,7 @@ public class UserDetailsImpl01sc implements UserDetails {
         this.password = password;
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>(); //s29
         grantedAuthorities.add(new SimpleGrantedAuthority(role)); //s 30
-        this.authorities = grantedAuthorities;//s27 buraya setlenmesini sagladik
+        this.authorities = grantedAuthorities;//s27 buraya setlenmesini sagladik Authorise: roller
         this.ssn = ssn;
     } //s28
 
