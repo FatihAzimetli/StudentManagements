@@ -45,3 +45,6 @@ public class AuthEntryPointJwt07sc implements AuthenticationEntryPoint {
 } //s98 burada yapacagimiz overide ile olusan mesejlar claynta gidecek ve implement etik  tek metod onayladik
 
 /*s112 burada olusturulan class WebSecurityConfig05sc injection yapacagiz s//85 altina yazdik*/
+
+/*soru bu class nicin yazildi??? Security katindaki firlamasi muhtemel exception lar bu kata yönlendirilir bu
+* class türünde exception larin firlamasini sagliyoruz*/

@@ -119,4 +119,8 @@ public class WebSecurityConfig05sc {
                 s112 den sonra TODO kaldirp bu metohd yazildi bu metod frontede veya clanta bilgi verecek
                                 07.12.2023 login Endpointleri ders8 itibari ile yaziyoruz
                                 bu sistemde register yok gecici kayit bilgi ve sifresini biz verecegiz
-                                bu uygulamaya herkesi admin dahil edecek*/
+                                bu uygulamaya herkesi admin dahil edecek
+                                login islemleri icin ayri claslar olusturacagiz
+                                olusturdugumuz controller pakeg a controller class olusturuyorum
+                                bu sadece login islemi ile ilgili  bir class tir burasi User kontrolu degil
+                                AuthenticationController01lg */

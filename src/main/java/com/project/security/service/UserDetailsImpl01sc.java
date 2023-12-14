@@ -38,6 +38,7 @@ public class UserDetailsImpl01sc implements UserDetails {
         this.username = username;
         this.name = name;
         this.isAdvisor = isAdvisor;
+
         this.password = password;
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>(); //s29
         grantedAuthorities.add(new SimpleGrantedAuthority(role)); //s 30
