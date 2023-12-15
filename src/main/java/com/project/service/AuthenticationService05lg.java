@@ -1,8 +1,11 @@
 package com.project.service;
 
 import com.project.entity.concretes.user.User;
+import com.project.exception.BadRequestException11lg;
 import com.project.payload.mappers.UserMapper08lg;
+import com.project.payload.messages.ErrorMessages12lg;
 import com.project.payload.request.LoginRequest03lg;
+import com.project.payload.request.business.UpdatePasswordRequest09lg;
 import com.project.payload.response.AuthResponse04lg;
 import com.project.payload.response.UserResponse07lg;
 import com.project.repository.UserRepository06;
@@ -15,8 +18,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +36,8 @@ public class AuthenticationService05lg {
     private final JwtUtils03sc jwtUtils03sc; //l41 buraya injection yapildi asagiya greyd yapiyoruz l42
 
     private final UserMapper08lg userMapper; //l88
+
+    private final PasswordEncoder passwordEncoder;//lg122 buray injection yaptik
     public ResponseEntity<AuthResponse04lg> authenticateUser (LoginRequest03lg loginRequest03lg){
       String username =  loginRequest03lg.getUsername();
       String password =  loginRequest03lg.getPassword();
@@ -70,6 +77,28 @@ public class AuthenticationService05lg {
         return userMapper.mapUserToUserResponse(user); //l89
 
     } //l82
+
+    public void updatePassword(UpdatePasswordRequest09lg updatePasswordRequest08lg, HttpServletRequest request) {
+       String userName = (String) request.getAttribute("username"); //l111 manuel kest istiyor objec yerine sitring yazdigimiz icin ve yaptik
+      User user =  userRepository06.findByUsername(userName); //l112
+
+        if(Boolean.TRUE.equals(user.getBuilt_in())){
+            throw new BadRequestException11lg(ErrorMessages12lg.NOT_PERMITTED_METHOD_MESSAGE);//lg118-->lg119
+        }//lg113-->lg118-->lg121
+        //Bu kontrolden gectikten sonra yapilacak olan DB ile requestteki passwort esitligi kontrolu yapilir lg122 yukarida
+        //bu kodu hashleyip DB gönderecegiz lg123 !!eski sifre bilgisi dogrumu.?
+        if (!passwordEncoder.matches(updatePasswordRequest08lg.getOldPassword(), user.getPassword())){
+            throw new BadRequestException11lg(ErrorMessages12lg.PASSWORD_NOT_MATCHED);//lg125
+        }//lg123--lg124
+        //!! bundan sonra yeni sifle encod edilmeli
+       String hashedPassword = passwordEncoder.encode(updatePasswordRequest08lg.getNewPassword());//lg126
+        //!!! uptade islemi kalir
+        user.setPassword(hashedPassword);//lg127
+        userRepository06.save(user);//lg128 bu loginin security yapisinida yazmak gerekiyor
+
+    }//l110
+
+
 }//l33
 
 
@@ -102,3 +131,24 @@ public class AuthenticationService05lg {
                 .email(user.getEmail())
                 .userRole(user.getUserRole().getRoleType().name)
                 .build();//l87 bu kod tekrarini yapmadik */
+
+/*public void updatePassword(UpdatePasswordRequest09lg updatePasswordRequest08lg, HttpServletRequest request) {
+       String userName = (String) request.getAttribute("username"); //l111 manuel kest istiyor objec yerine sitring yazdigimiz icin ve yaptik
+      User user =  userRepository06.findByUsername(userName); //l112
+        //!!! built_in admin kontrolu yapilmasi gerekir degistirlmesi teklif edilemez olan hesapta hicbir sey degistirilemez.
+        // Bu drumda buraya bedexception class olusturmak gerekiyor exception class pakeg altinda yeni class olusturuyorum
+        // lg114 icin class adi BadRequestException11lg
+        if(user.getBuilt_in()){//true icin ok // false icin ok ancak NULL icin uygun degil if(user.getBuilt_in() bu durumda null point exception gelir
+            throw new BadRequestException11lg(ErrorMessages11lg.NOT_PERMITTED_METHOD_MESSAGE);//lg118-->lg119  Trank ici mesaj
+            icin messages pkeg altinda Errormesages class yapariz icine standarti yaziyoruz
+        }//lg113-->lg118-->lg121
+    }//l110
+    Bu durumda null degerler icin kondisin farkli olmali user.getBuilt_in() bunu silip boolen degeri koyacagiz
+    Boolean.TRUE.equals() bu metod nullpoint exception firlatmayan ikils verir
+    if(Boolean.TRUE.equals(user.getBuilt_in())){ bununla tamalayinca null kontrolüde birlikte gerceklestirmis oluruz
+    burada true--true exception verir true--false olursa sorguya girmez true-null olursa sorguya girmez bu
+    equels metodunun avantajidir*/
+
+/*if (){
+            throw new BadRequestException11lg()
+        }//lg123 Errormessages klasina gider ve ilgili mesaji yazariz--lg124*/

@@ -87,16 +87,17 @@ public class WebSecurityConfig05sc {
             "/images/**",
             "/css/**",
             "/js/**",
-            "/contactMessage/save"
-    }; //s89
+            "/contactMessage/save",
+            "/auth/login"
+    }; //s89 "/contactMessage/save" ananim kullanici tetiklesin istemistik "/auth/login" lg128
 
 }//sc15
 
-/*sc20 ilk dolduracagimiz clas UserDetailsImpl02sc klasi olacak*/
+/*todo : sc20 ilk dolduracagimiz clas UserDetailsImpl02sc klasi olacak*/
 
 
 
-/*@Override
+/* todo : @Override
            public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
                     .allowedOrigins("*")
@@ -124,3 +125,4 @@ public class WebSecurityConfig05sc {
                                 olusturdugumuz controller pakeg a controller class olusturuyorum
                                 bu sadece login islemi ile ilgili  bir class tir burasi User kontrolu degil
                                 AuthenticationController01lg */
+/* todo:Bu klasin login islemleri icin geldik --lg128 "/auth/login" */

@@ -54,7 +54,7 @@ public class User {
 
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY )//322
-    private String password;//321
+    private String password;//321 hassaa veri client tarafina gitmemeli
 
 
     @Column(unique = true)//324
@@ -65,7 +65,10 @@ public class User {
     private String email;//325
 
 
-    private Boolean built_in;//327 superUser Built_in silinemez hesap
+    private Boolean built_in;//327 superUser Built_in silinemez hesap, degistirilemez ve
+    // degistirilmesi talep edilemez bu kisinin paswortdü dahi degistirilemez yani süper admin kendi sifresini bile
+    // degisteremez. Olasi proje problemi icin ulasilacak tek adresstir olasi  en kötü
+    // ve dramatik senaryolarda sistem durdurulur ve yeni built-in admin atanir ve server tekrar baslatilir
 
 
     private String motherName; //328 ögrenci icin

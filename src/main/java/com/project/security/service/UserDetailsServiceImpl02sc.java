@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl02sc implements UserDetailsService {
         if (user != null){
             return new UserDetailsImpl01sc(user.getId(),
                     user.getUsername(), user.getName(),false,
-                    user.getPassword(), user.getUserRole().getRoleType().name,user.getSsn());
+                    user.getPassword(), user.getUserRole().getRoleType().name(),user.getSsn());
         } //s43
         throw new UsernameNotFoundException("User' " + username + "not found"); //s44
     } //s7 inmlement öncelikle null sildik return null;

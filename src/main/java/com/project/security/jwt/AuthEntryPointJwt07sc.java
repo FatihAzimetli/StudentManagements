@@ -47,4 +47,5 @@ public class AuthEntryPointJwt07sc implements AuthenticationEntryPoint {
 /*s112 burada olusturulan class WebSecurityConfig05sc injection yapacagiz s//85 altina yazdik*/
 
 /*soru bu class nicin yazildi??? Security katindaki firlamasi muhtemel exception lar bu kata yönlendirilir bu
-* class türünde exception larin firlamasini sagliyoruz*/
+* class türünde exception larin firlamasini sagliyoruz burada adminin yapmasi gerekeni baska birisi yapmak istediginde
+* burasi 401 hata kodunu gönderecek bu class ConfigException gibi calisiyor*/
