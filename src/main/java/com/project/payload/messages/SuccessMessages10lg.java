@@ -5,7 +5,9 @@ public class SuccessMessages10lg {
     private SuccessMessages10lg() {
     }//l106
 
-    public static final String PASSWORD_CHANGED_RESPONSE_MESSAGE = "Password Successfully Changed"; //l105
+    public static final String PASSWORD_CHANGED_RESPONSE_MESSAGE = "Password Successfully Changed"; //lg105
+
+    public static final String USER_CREATE = "User is saved Successfully";//uc116
 }//lg104
 
 

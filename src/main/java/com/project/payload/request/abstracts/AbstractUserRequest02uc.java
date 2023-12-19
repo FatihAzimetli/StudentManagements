@@ -2,15 +2,13 @@ package com.project.payload.request.abstracts;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.entity.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @SuperBuilder //uc10 bundan claslar üretecegimiz icindir
@@ -39,5 +37,29 @@ public abstract class AbstractUserRequest02uc {
     @Past(message = "Your birth day can not be in the future") //uc29
     private LocalDate birtDay;//uc26
 
-    private String ssn; //uc3ß
+    @NotNull(message = "Please enter your ssn") //uc31
+    @Pattern(regexp = "^(?!000/666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$",
+            message = "Please enter valid SSN number")//uc32
+    private String ssn; //uc30
+
+    @NotNull(message = "Please enter your birthPlace")//uc34
+    @Size(min = 2, max = 30, message = "Your birthPlace should be at least 2 chart")//uc35
+    @Pattern(regexp = "\\A(?!\\s*\\Z).+", message = "Your birthPlace must consist of characters") //uc36
+    private String birthPlace;//uc33
+
+    @NotNull(message = "Please enter your phoneNumber")//uc38
+    @Size(min = 2, max = 30, message = "Your phoneNumber should be at least 2 chart")//uc39
+    @Pattern(regexp = "^((\\(\\d{3}\\))/\\d{3})[-.]?\\d{3}[-.]?\\d{4}$", message = "Your phoneNumber must consist of characters") //uc40
+    private String phoneNumber;//uc37
+
+    @NotNull(message = "Please enter your gender")//uc42
+    private Gender gender;//uc41
+
+    @NotNull(message = "Please enter your email")//uc44
+    @Email(message = "Please enter valid email")//uc45
+    @Size(min = 5, max = 50, message = "Your email should be between 5 and 50 chars")//uc46
+    private String email; //uc43
 }//uc09
+
+
+/*todo -->uc47 ikinci abraks class yapiyoruz ve bu klastan extend edecegiz BaseUserRequest03uc*/
