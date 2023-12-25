@@ -18,6 +18,9 @@ public class ErrorMessages12lg {
 
 
     public static final String NOT_FOUND_USER_USERROLE_MESSAGE= "Error: User not fount with user-role %s";//uc111
+
+
+    public static final String NOT_FOUND_USER_MESSAGE ="Error: User not found with id : %s"; //uc164
 }//Lg119
 
 /*lg120 icin Burada gnreate--Cunstructer yapiyoruz  public ErrorMessages11lg() {

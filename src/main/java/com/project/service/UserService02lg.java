@@ -2,7 +2,9 @@ package com.project.service;
 
 import com.project.entity.concretes.user.User;
 import com.project.entity.enums.RoleType;
+import com.project.exception.BadRequestException11lg;
 import com.project.exception.ResourceNotFoundException;
+import com.project.payload.abstracts.BaseUserResponse06lg;
 import com.project.payload.mappers.UserMapper08lg;
 import com.project.payload.messages.ErrorMessages12lg;
 import com.project.payload.messages.SuccessMessages10lg;
@@ -11,12 +13,17 @@ import com.project.payload.response.ResponseMessage;
 import com.project.payload.response.UserResponse07lg;
 import com.project.repository.UserRepository06;
 import com.project.security.service.UserRoleService07uc;
+import com.project.service.helper.MethodHelper11uc;
+import com.project.service.helper.PageableHelper08uc;
 import com.project.service.validator.UniquePropertyValidator05uc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 //todo uc102 buraya servisi injection yapacagiz ya yoksa kontrolleri servis katinda oldugu icin buradan UserRoleService katina dallanacagiz
 
@@ -32,6 +39,10 @@ public class UserService02lg {
     private final UserRoleService07uc userRoleService07uc; //uc107 ilgili enjection yapildi
 
     private final PasswordEncoder passwordEncoder;//uc 112
+
+    private final PageableHelper08uc pageableHelper08uc; //uc131
+
+    private final MethodHelper11uc methodHelper11uc;//uc 189 <--MethodHelper11uc class injection yaptik
 
     public ResponseMessage<UserResponse07lg> saveUser(UserRequest04uc userRequest04uc, String userRole) {
         //!!!1-usurname-ssn-email-phonenumber unique olmali ve unique mi buraya simdi injection yapiyorum -->us82 UniquePropertyValidator05uc
@@ -58,22 +69,78 @@ public class UserService02lg {
         //!!!Password encoder edilecek hashlenecek -->uc112 yukarida injection islemi yapildi
         //sifreyi encode edeceek cod yaziyoruz
         user.setPassword(passwordEncoder.encode(user.getPassword()));//uc113 ayrica userRequest.getPassword yine olur
-        /* todo !!!advisor durumu false yapiliyor. Techarde acaba rehberteacher mi diye kontrol ettigimiz degisken isAdvisor var user tarafinda bunun null olmamamsi icin
-            null olabilir. bizin save lame islemi yaptiklarimiz admin -menager ve assitand manegar bunlarin zaten edvaserTeacher olma ihtimalleri zaten yok
-            bu degiskeni teacher tarafinda hep kontrol edecegim icin önce orayi fallse cekecegiz*/
+
         user.setIsAdvisor(Boolean.FALSE);//uc114
-        user savedUser = userRepository06.save(user); //uc115 -->uc116 SuccessMessages10lg class icinde
-        /* todo bu asagidaki kodlari yazarken ResponseMessage class kontrol ederek yaziyoruz*/
+        User savedUser = userRepository06.save(user); //uc115 -->uc116 SuccessMessages10lg class icinde
+
         return ResponseMessage.<UserResponse07lg>builder()
                 .message(SuccessMessages10lg.USER_CREATE)
                 .object(userMapper08lg.mapUserToUserResponse(savedUser))
-                .build();//uc117 update ve save metodlari uzun olurCünkü mevcut veriler güncelllendigi icin--uc118 icinUserController01uc class gittik
-        /*todo savedUser DB gelen user#dir ve id bilgisi mevcuttur user ise kaydedilmeyen olandir ve id bilgisi yok. her ikiside pojo dur*/
+                .build();//uc117
+
     }//uc61
 
     public Page<UserResponse07lg> getUserByPage(int page, int size, String sort, String type, String userRole) {
-    }//uc123 UserController01uc clasinda great ederk geldik
-}//l04
+      Pageable pageable = pageableHelper08uc.getPageableWithProperties(page, size, sort, type); //uc132
+       return userRepository06.findByUserByRole(userRole, pageable).map(userMapper08lg::mapUserToUserResponse);  //uc133 -->uc134 findByUserByRole great etmek
+    }//uc123 UserController01uc clasinda great ederk geldik uc124 icin service pakeg altina halper yardimci pakeg olusturuyoruz class adi PageableHelper08uc
+
+    public ResponseMessage<BaseUserResponse06lg> getUserById(Long userId) {
+        BaseUserResponse06lg baseUserResponse06lg = null; //uc162 <--StudentResponse10uc classtan geldik
+        User user = userRepository06.findById(userId).orElseThrow(()->
+                new ResourceNotFoundException(String.format(ErrorMessages12lg.NOT_FOUND_USER_MESSAGE, userId))); //uc163 uc164--> ErrorMessage class
+
+        if (user.getUserRole().getRoleType() == RoleType.STUDENT){
+            baseUserResponse06lg = userMapper08lg.mapUserToStudentResponse(user); //uc165 //uc166 //-->Uc173 greatemetod UserMapper08lg class gitti
+        } else if (user.getUserRole().getRoleType() == RoleType.TEACHER) {
+            baseUserResponse06lg = userMapper08lg.mapUserToTeacherResponse(user); //uc168 //uc167 //-->uc175 gretMet UserMapper08lg class gider
+        }else {
+            baseUserResponse06lg = userMapper08lg.mapUserToUserResponse(user); //uc170
+        }//uc169
+        return ResponseMessage.<BaseUserResponse06lg>builder()
+                .message(SuccessMessages10lg.USER_FOUND)
+                .status(HttpStatus.OK)
+                .object(baseUserResponse06lg)
+                .build(); //uc172
+    }//uc142 <--return userService02lg.getUserById(userId);//uc141 serConrteoller01uc classtan greate ettik
+
+    public String deleteUserById(Long id, HttpServletRequest request) {
+        //!!! -->uc183 silinecek user varmi kontrolü varmi yokmu id kontrolü delete ve uptade cok yerde yapicagiz burada yardimci
+        // class olusturacagiz injection islemler icin varmi yyokmu servis katinda yapildigi icin bu helper pakeg vardi burada bir class daha yapiyoruz MethodHelper11uc
+       User user =  methodHelper11uc.isUserExist(id); //uc190 silinmesini istedigimiz user getirecek talebi yapan user ulasmamiz gerekiyor
+        //!!! silme talebi yapan user ulasilmasi gereken method  buna request üzerinden gidecegiz
+       String userName = (String) request.getAttribute("username"); //uc191 Object dönüyordu Sring data türüne cevirdik elimizdeki userName ile user ulasacagiz
+       User user2 = userRepository06.findByUsername(userName);//uc192 bize dönmesi gereken User data türünde user2 yaptik.(silinme talebinde bulunan user)
+        //!!!burada standart kontroller built in yapilacak neye göre user a göre yapilacak
+        if (Boolean.TRUE.equals(user.getBuilt_in())){
+            throw new BadRequestException11lg(ErrorMessages12lg.NOT_PERMITTED_METHOD_MESSAGE);//uc194
+            //!!! Müdür sadece Teacher, Müdür yardimcisi vey Student silebilsin. uc196 method da
+        } else if (user2.getUserRole().getRoleType() == RoleType.MANAGER) {
+            if (!((user.getUserRole().getRoleType() == RoleType.TEACHER)
+                    ||(user.getUserRole().getRoleType() == RoleType.STUDENT)
+                    ||(user.getUserRole().getRoleType() == RoleType.ASSISTANT_MANAGER))){
+                throw new BadRequestException11lg(ErrorMessages12lg.NOT_PERMITTED_METHOD_MESSAGE);//uc195
+            }//uc 196
+            //!!!müdür yardimcisi sadece Teacher ve Student silebilsin uc 197
+        } else if (user2.getUserRole().getRoleType() == RoleType.ASSISTANT_MANAGER) {
+            if (!((user.getUserRole().getRoleType() == RoleType.TEACHER)||
+                    (user.getUserRole().getRoleType() == RoleType.STUDENT))){
+                throw new BadRequestException11lg(ErrorMessages12lg.NOT_PERMITTED_METHOD_MESSAGE);//uc198
+            }//uc 197
+        }  //uc193
+        userRepository06.deleteById(id); //uc199
+        return SuccessMessages10lg.USER_DELETE; //uc201
+    }//uc182 greate method deleteUserById yaparak UserController01uc classtan geldik Object String cevirdik httpServletRequest bunuda request olarak degistirdik
+
+    public ResponseMessage<BaseUserResponse06lg> updateUser(UserRequest04uc userRequest04uc, Long userId) {
+        //!!! varmi yokmu kontrolu
+       User user = methodHelper11uc.isUserExist(userId); //uc 306
+        //!!! builtIn kontrolü icin kod tekrari yapmamak icin MethodHelper11uc classta bu metodu olusturaxcagiz
+        methodHelper11uc.checkBuiltIn(user);//uc309
+        //!!!uniq kontrolü.
+        uniquePropertyValidator05uc.checkUniqueProperties(user, userRequest04uc);//uc310 Unique degerleri kont icin UniquePropertyValidator05uc class metod yazmak icin gittik -->uc311
+    }//uc305 <-- UserController01uc class geldik great method ile
+}//lg04 bu katmanda unique kontrolleri yapilamak zorundadir
 
 
 /*todo public OBJET saveUser(UserRequest04uc userRequest04uc, String userRole) {
@@ -98,4 +165,19 @@ public class UserService02lg {
 /* todo farklilik olsun diye diger String metodu buraya yazdik  } else if (userRole.equalsIgnoreCase(RoleType.MANAGER.name()) {
 *   else if (userRole.equalsIgnoreCase("Dean")*/
 
-/
+/*//uc113 ayrica userRequest.getPassword yine olur
+ todo !!!advisor durumu false yapiliyor. Techarde acaba rehberteacher mi diye kontrol ettigimiz degisken isAdvisor var user tarafinda bunun null olmamamsi icin
+    null olabilir. bizin save lame islemi yaptiklarimiz admin -menager ve assitand manegar bunlarin zaten edvaserTeacher olma ihtimalleri zaten yok
+    bu degiskeni teacher tarafinda hep kontrol edecegim icin önce orayi fallse cekecegiz*/
+
+/*//uc117 update ve save metodlari uzun olurCünkü mevcut veriler güncelllendigi icin--uc118 icinUserController01uc class gittik
+     todo savedUser DB gelen user#dir ve id bilgisi mevcuttur user ise kaydedilmeyen olandir ve id bilgisi yok. her ikiside pojo dur*/
+
+/*uc115 -->uc116 SuccessMessages10lg class icinde
+     todo bu asagidaki kodlari yazarken ResponseMessage class kontrol ederek yaziyoruz*/
+/* todo public ResponseMessage<BaseUserResponse06lg> getUserById(Long userId) {
+    }//uc142 <--return userService02lg.getUserById(userId);//uc141 serConrteoller01uc classtan greate ettik
+    BaseUserResponse acilimi olan UserResponse, TeacherResponse ve StudentResponse calasslari olusturuyoruz
+    bu tarz classlar payload icindeki responcse pakeg icine bununicine onceden UserResponse diye bir class olusturulmus bu yüzden Responce icine
+      yeni bir user diye pakeg ekliyoruz bunun icine TeacherResponse09uc ve StudentResponse10uc classlarini olusturduk*/
+

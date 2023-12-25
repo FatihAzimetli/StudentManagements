@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder //l76
 @JsonInclude (JsonInclude.Include.NON_NULL) //l77
 public class UserResponse07lg extends BaseUserResponse06lg {
-}//l72 -->l78
+}//lc72 -->lg78
 
 
 

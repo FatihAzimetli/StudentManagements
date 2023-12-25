@@ -61,5 +61,9 @@ public abstract class AbstractUserRequest02uc {
     private String email; //uc43
 }//uc09
 
+//uniqlik kontrolu buralarda yapilamaz uniqlik kontrolu DB katmaninda yapilabilir ama bu unieqlik kontrolunü yapmak zorundayiz peki nerede
+//yapmaliyiz o zaman DB her harükalde gidecegiz ve DB bu kontrolu yapacagiz Unique neler olmasi gerekiyor 1-Username 2-ssn 3- email 4-phonenumber
+//yeni bir kullanici kaydedilirken bu 4 veri unique olmalidir Uniue kontrolü servis katmaninda yapilmasi gerekiyor
+
 
 /*todo -->uc47 ikinci abraks class yapiyoruz ve bu klastan extend edecegiz BaseUserRequest03uc*/
